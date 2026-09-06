@@ -1,0 +1,14 @@
+[user]
+	name = YoYu
+	email = 92780899+YoYuTW@users.noreply.github.com
+[init]
+	defaultBranch = main
+[color]
+	ui = auto
+[core]
+	excludesfile = /Users/yoyu/.gitignore_global
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
