@@ -23,6 +23,51 @@ for pkg in zsh jq git curl ffmpeg; do
   fi
 done
 
+# Install GitHub CLI
+if ! command -v gh &>/dev/null; then
+  echo "Installing gh..."
+  if [[ "$(uname)" == "Darwin" ]]; then
+    brew install gh
+  else
+    sudo mkdir -p -m 755 /etc/apt/keyrings
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg |
+      sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null
+    sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" |
+      sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null
+    sudo apt update
+    sudo apt install -y gh
+  fi
+fi
+
+# Install Docker
+if ! command -v docker &>/dev/null; then
+  echo "Installing docker..."
+  if [[ "$(uname)" == "Darwin" ]]; then
+    brew install --cask docker
+  else
+    # Ubuntu uses its own repo; Raspberry Pi OS uses the Debian one.
+    . /etc/os-release
+    if [ "$ID" = ubuntu ]; then
+      DOCKER_DISTRO=ubuntu
+    else
+      DOCKER_DISTRO=debian
+    fi
+
+    sudo mkdir -p -m 755 /etc/apt/keyrings
+    sudo curl -fsSL "https://download.docker.com/linux/$DOCKER_DISTRO/gpg" \
+      -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$DOCKER_DISTRO $VERSION_CODENAME stable" |
+      sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+    sudo apt update
+    sudo apt install -y docker-ce docker-ce-cli containerd.io \
+      docker-buildx-plugin docker-compose-plugin
+    sudo usermod -aG docker "$USER"
+    echo "Log out and back in to use docker without sudo."
+  fi
+fi
+
 # Install oh-my-zsh
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "Installing oh-my-zsh..."
