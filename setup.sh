@@ -12,6 +12,11 @@ install_pkg() {
   fi
 }
 
+# Update package list
+if [[ "$(uname)" != "Darwin" ]]; then
+  sudo apt update
+fi
+
 for pkg in zsh jq git curl ffmpeg; do
   if ! command -v "$pkg" &>/dev/null; then
     install_pkg "$pkg"
@@ -97,7 +102,7 @@ jq '
     "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
   } |
   .permissions = {"defaultMode": "auto"} |
-  .model = "sonnet" |
+  .model = "opus" |
   .statusLine = {"type": "command", "command": "sh $HOME/.claude/statusline-command.sh"} |
   .enabledPlugins = {
     "impeccable@impeccable": true,
