@@ -1,0 +1,35 @@
+# OPENSPEC completions
+fpath=("$HOME/.oh-my-zsh/custom/completions" $fpath)
+autoload -Uz compinit
+compinit
+
+# Homebrew
+alias ibrew='arch -x86_64 /usr/local/bin/brew'
+alias brew='/opt/homebrew/bin/brew'
+
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit
+  compinit
+fi
+
+# Google Cloud SDK
+if [ -f "$HOME/gliacloud/google-cloud-sdk/path.zsh.inc" ]; then
+  . "$HOME/gliacloud/google-cloud-sdk/path.zsh.inc"
+fi
+if [ -f "$HOME/gliacloud/google-cloud-sdk/completion.zsh.inc" ]; then
+  . "$HOME/gliacloud/google-cloud-sdk/completion.zsh.inc"
+fi
+
+# Bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# MySQL client
+export PATH="/opt/homebrew/opt/mysql-client@8.4/bin:$PATH"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/mysql-client@8.4/lib/pkgconfig"
+
+# VSCode shell integration
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
+# macOS file descriptor limit
+ulimit -S -n 2048
